@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Binary Search Analysis</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<h2>Analisis Binary Search Iteratif vs Rekursif</h2>
+
+<input type="file" id="file">
+<button onclick="upload()">Upload Data</button><br><br>
+
+<input id="target" placeholder="Masukkan NIM">
+<button onclick="run()">Cari</button>
+
+<canvas id="chart" width="400" height="200"></canvas>
+
+<script>
+let sizes = []
+let iterTimes = []
+let recTimes = []
+
+let chart = new Chart(document.getElementById("chart"), {
+  type: 'line',
+  data: {
+    labels: sizes,
+    datasets: [
+      { label: 'Iteratif', data: iterTimes, borderWidth: 2 },
+      { label: 'Rekursif', data: recTimes, borderWidth: 2 }
+    ]
+  }
+})
+
+function upload() {
+  let f = document.getElementById("file").files[0]
+  let fd = new FormData()
+  fd.append("file", f)
+
+  fetch("/upload", { method: "POST", body: fd })
+    .then(() => alert("Data berhasil diupload"))
+}
+
+function run() {
+  let target = document.getElementById("target").value
+  fetch(`/search?target=${target}`)
+    .then(res => res.json())
+    .then(d => {
+      sizes.push(d.size)
+      iterTimes.push(d.iterative)
+      recTimes.push(d.recursive)
+      chart.update()
+    })
+}
+</script>
+</body>
+</html>
